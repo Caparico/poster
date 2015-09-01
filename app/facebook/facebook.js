@@ -27,12 +27,43 @@ angular.module('ngSocial.facebook', ['ngRoute', 'ngFacebook'])
 })
 
 .controller('FacebookCtrl', ['$scope', '$facebook', function($scope, $facebook) {
-    // this controller check if the user is already logged into FB
+    // Is user already logged into FB or not?
     $scope.isLoggedIn = false;
-    // if not, it will fire the login popup
+    // if not - fire the login function
     $scope.login = function() {
         $facebook.login().then(function() {
-            console.log('Logged in...');
+            $scope.isLoggedIn = true;
+            refresh();
         });
     }
+    // logout function
+    $scope.logout = function() {
+        $facebook.logout().then(function() {
+            $scope.isLoggedIn = false;
+            refresh();
+        });
+    }
+    
+    function refresh() {
+        // call the facebook api on the logged in user profile
+        $facebook.api("/me").then(function(response){
+            // check if user is indeed logged in
+            $scope.isLoggedIn = true;
+            // greet the user
+            $scope.welcomeMsg = "Welcome " + response.name;
+            // make the userInfo available via response
+            $scope.userInfo = response;
+            // an api request to fetch the user profile image
+            $facebook.api("/me/picture").then(function(response){
+                $scope.picture = response.data.url;
+            })
+        },
+        // another function to show if there was an error logging in
+        function(err){
+            $scope.welcomeMsg = "Please log in";
+        });
+    }
+    
+    // call the refresh function which provides a welcome msg
+    refresh();
 }]);
