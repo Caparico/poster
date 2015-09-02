@@ -2,9 +2,7 @@
   <div class="col-md-4">
       <h4>{{welcomeMsg}}</h4>
       <div ng-if="isLoggedIn == true">
-          <a href="{{userInfo.link}}" target="_blank">
-              <img src="{{picture}}" alt="User Profile Image">
-          </a>
+          <a href="#" target="_blank"><img ng-src="{{picture}}" alt="User Profile Image"></a>
       </div>
       <br>
       <div ng-if="isLoggedIn == false">
@@ -25,22 +23,34 @@
           </ul>
       </div>
       <br>
-      <div class="well">
+      <div class="well" ng-if="isLoggedIn == true">
           <h4>Permissions</h4>
           <ul>
-              <li></li>
-              <li></li>
+              <li ng-repeat="permission in permissions">{{permission.permission}} - {{permission.status}}</li>
           </ul>
       </div>
   </div>
   <div class="col-md-8">
-      <h3>Welcome to Facebook!</h3>
-      <form action="#">
-          <div class="form-group">
-              <label>Status Update</label>
-              <textarea class="form-control" id="" cols="10" rows="3"></textarea>
+      <h3>Welcome to Facebook!</h3>      
+      <div ng-if="isLoggedIn == true">
+          <form ng-submit="postStatus()">
+              <div class="form-group">
+                  <label>Status Update</label>
+                  <textarea ng-model="myPost" class="form-control" id="" cols="10" rows="3"></textarea>
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+          <br>
+          <div ng-repeat="posts in posts" class="stbody">
+              <div class="stimg">
+                  <img ng-src="{{picture}}" alt="">
+              </div>
+              <div class="sttext">
+                  {{post.message}}
+                  <div class="sttime">{{post.updated_time}}</div>
+              </div>
           </div>
-          <button type="submit" class="btn btn-default">Submit</button>
-      </form>
+      </div>
+      <p ng-if="isLoggedIn == false">Please log in if you wish to post!</p>
   </div>
 </div>

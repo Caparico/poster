@@ -12,7 +12,7 @@ angular.module('ngSocial.facebook', ['ngRoute', 'ngFacebook'])
 // configure the facebook application against Facebook - App ID + permissions
 .config( function( $facebookProvider ) {
   $facebookProvider.setAppId('1738263123067679');
-  $facebookProvider.setPermissions("email", "public_profile", "user_posts", "publish_actions", "user_photos");    
+  $facebookProvider.setPermissions("email, public_profile, user_posts, publish_actions, user_photos");    
 })
 
 // load the ngFabook SDK
@@ -46,21 +46,29 @@ angular.module('ngSocial.facebook', ['ngRoute', 'ngFacebook'])
     
     function refresh() {
         // call the facebook api on the logged in user profile
-        $facebook.api("/me").then(function(response){
+        $facebook.api('/me').then(function(response){
             // check if user is indeed logged in
             $scope.isLoggedIn = true;
             // greet the user
-            $scope.welcomeMsg = "Welcome " + response.name;
+            $scope.welcomeMsg = 'Welcome ' + response.name;
             // make the userInfo available via response
             $scope.userInfo = response;
-            // an api request to fetch the user profile image
-            $facebook.api("/me/picture").then(function(response){
-                $scope.picture = response.data.url;
+            // another api callback to fetch the user profile image
+            $facebook.api('/me/picture').then(function(response){
+                $scope.picture = response.data.url,
+                    // api callback for permissions
+                $facebook.api('/me/permissions').then(function(response){
+                    $scope.permissions = response.data;
+                    $facebook.api('/me/posts').then(function(response){
+                        console.log(response.data);
+                        $scope.posts = response.data;
+                    });
+                });
             })
         },
         // another function to show if there was an error logging in
         function(err){
-            $scope.welcomeMsg = "Please log in";
+            $scope.welcomeMsg = 'Please log in';
         });
     }
     
